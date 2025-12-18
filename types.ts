@@ -1,3 +1,4 @@
+
 export interface Article {
   id: string;
   title: string;
@@ -7,9 +8,11 @@ export interface Article {
   author: string;
   date: string;
   imageUrl: string;
+  videoUrl?: string;
   isFeatured?: boolean;
   tags?: string[];
   readingTime?: string;
+  contentWarning?: string;
 }
 
 export enum Category {

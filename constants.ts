@@ -15,6 +15,7 @@ export const MOCK_ARTICLES: Article[] = [
     author: 'أحمد المنصور',
     date: '15 أكتوبر 2023',
     imageUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=1000',
+    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
     isFeatured: true,
     tags: ['ذكاء_اصطناعي', 'تقنية', 'اقتصاد_رقمي'],
     readingTime: '5 دقائق'
@@ -40,6 +41,7 @@ export const MOCK_ARTICLES: Article[] = [
     author: 'فهد العتيبي',
     date: '13 أكتوبر 2023',
     imageUrl: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=1000',
+    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
     readingTime: '4 دقائق'
   },
   {
@@ -51,7 +53,8 @@ export const MOCK_ARTICLES: Article[] = [
     author: 'ليلى مراد',
     date: '12 أكتوبر 2023',
     imageUrl: 'https://images.unsplash.com/photo-1518546305927-5a555bb7020d?auto=format&fit=crop&q=80&w=1000',
-    readingTime: '6 دقائق'
+    readingTime: '6 دقائق',
+    contentWarning: 'يتضمن تحليلات لمخاطر استثمارية عالية'
   },
   {
     id: '5',
@@ -73,6 +76,7 @@ export const MOCK_ARTICLES: Article[] = [
     author: 'هند القحطاني',
     date: '10 أكتوبر 2023',
     imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1000',
+    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
     readingTime: '5 دقائق'
   },
   {

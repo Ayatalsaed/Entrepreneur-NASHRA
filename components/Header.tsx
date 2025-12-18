@@ -1,5 +1,6 @@
+
 import React, { useState, useRef, useEffect } from 'react';
-import { Menu, X, Rocket, Search, ChevronLeft } from 'lucide-react';
+import { Menu, X, Rocket, Search, ChevronLeft, Play, ArrowLeft } from 'lucide-react';
 import { NAV_LINKS, MOCK_ARTICLES } from '../constants';
 import { Article } from '../types';
 
@@ -203,21 +204,39 @@ const Header: React.FC<HeaderProps> = ({ currentView, onNavigate, onArticleSelec
                       onClick={() => handleSearchResultClick(article)}
                       className="bg-white p-3 rounded-xl border border-slate-100 hover:border-emerald-300 hover:shadow-md cursor-pointer transition-all flex gap-4 group"
                     >
-                      <div className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-slate-200">
+                      <div className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-slate-200 relative">
                         <img 
                           src={article.imageUrl} 
                           alt={article.title} 
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         />
+                        {article.videoUrl && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-slate-900/30">
+                            <div className="bg-white/90 rounded-full p-1.5 shadow-sm">
+                              <Play size={14} className="text-emerald-600 fill-emerald-600" />
+                            </div>
+                          </div>
+                        )}
                       </div>
                       <div className="flex-grow flex flex-col justify-center">
-                        <span className="text-xs font-bold text-emerald-600 mb-2 bg-emerald-50 w-fit px-2 py-0.5 rounded-full">{article.category}</span>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-xs font-bold text-emerald-600 bg-emerald-50 w-fit px-2 py-0.5 rounded-full">{article.category}</span>
+                          {article.videoUrl && (
+                            <span className="text-[10px] font-black text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded uppercase flex items-center gap-1">
+                              فيديو <Play size={8} className="fill-current" />
+                            </span>
+                          )}
+                        </div>
                         <h4 className="font-bold text-lg text-slate-900 group-hover:text-emerald-700 transition-colors line-clamp-1 mb-1">
                           {article.title}
                         </h4>
-                        <p className="text-sm text-slate-500 line-clamp-2 leading-relaxed">
+                        <p className="text-sm text-slate-500 line-clamp-1 leading-relaxed mb-2">
                           {article.excerpt}
                         </p>
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 group-hover:translate-x-[-4px] transition-transform">
+                          <span>عرض المقال</span>
+                          <ArrowLeft size={12} />
+                        </div>
                       </div>
                     </div>
                   ))}

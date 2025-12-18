@@ -1,40 +1,53 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Header from './components/Header';
 import MarketTicker from './components/MarketTicker';
 import ArticleCard from './components/ArticleCard';
 import ArticleDetail from './components/ArticleDetail';
 import SmartAnalyst from './components/SmartAnalyst';
+import Skeleton from './components/Skeleton';
 import Footer from './components/Footer';
 import { MOCK_ARTICLES, NAV_LINKS } from './constants';
 import { Article, Category } from './types';
-import { TrendingUp, Zap, Sparkles, Headphones, PlayCircle, Star, Bookmark } from 'lucide-react';
+import { TrendingUp, Zap, Sparkles, Headphones, PlayCircle, Bookmark, Filter, SearchX } from 'lucide-react';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState('home');
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [filteredArticles, setFilteredArticles] = useState<Article[]>(MOCK_ARTICLES);
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<Category>(Category.ALL);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentView, selectedArticle]);
 
   useEffect(() => {
-    if (currentView === 'home') {
-      setFilteredArticles(MOCK_ARTICLES);
-    } else {
-      const categoryMap: { [key: string]: Category } = {
-        'tech': Category.TECH,
-        'business': Category.BUSINESS,
-        'startups': Category.STARTUPS,
-        'ai': Category.AI
-      };
-      
-      const category = categoryMap[currentView];
-      if (category) {
-        setFilteredArticles(MOCK_ARTICLES.filter(a => a.category === category));
+    setIsLoading(true);
+    // Reset category filter when switching views
+    setActiveCategory(Category.ALL);
+    
+    // Simulate API fetch delay
+    const timer = setTimeout(() => {
+      if (currentView === 'home') {
+        setFilteredArticles(MOCK_ARTICLES);
+      } else {
+        const categoryMap: { [key: string]: Category } = {
+          'tech': Category.TECH,
+          'business': Category.BUSINESS,
+          'startups': Category.STARTUPS,
+          'ai': Category.AI
+        };
+        
+        const category = categoryMap[currentView];
+        if (category) {
+          setFilteredArticles(MOCK_ARTICLES.filter(a => a.category === category));
+        }
       }
-    }
+      setIsLoading(false);
+    }, 800);
+
+    return () => clearTimeout(timer);
   }, [currentView]);
 
   const handleArticleClick = (article: Article) => {
@@ -46,6 +59,18 @@ const App: React.FC = () => {
     setCurrentView(view);
     setSelectedArticle(null);
   };
+
+  // Compute feed sections
+  const mainFeatured = useMemo(() => filteredArticles.find(a => a.isFeatured) || filteredArticles[0], [filteredArticles]);
+  const otherArticles = useMemo(() => filteredArticles.filter(a => a.id !== mainFeatured?.id), [filteredArticles, mainFeatured]);
+  const sideHeroArticles = useMemo(() => otherArticles.slice(0, 2), [otherArticles]);
+  const baseFeedArticles = useMemo(() => otherArticles.slice(2), [otherArticles]);
+  
+  // Apply category filtering specifically to the main feed list
+  const displayedFeedArticles = useMemo(() => {
+    if (activeCategory === Category.ALL) return baseFeedArticles;
+    return baseFeedArticles.filter(article => article.category === activeCategory);
+  }, [baseFeedArticles, activeCategory]);
 
   const renderContent = () => {
     if (currentView === 'analyst') {
@@ -62,12 +87,6 @@ const App: React.FC = () => {
       );
     }
 
-    const mainFeatured = filteredArticles.find(a => a.isFeatured) || filteredArticles[0];
-    const otherArticles = filteredArticles.filter(a => a.id !== mainFeatured?.id);
-    const sideHeroArticles = otherArticles.slice(0, 2);
-    const mainFeedArticles = otherArticles.slice(2);
-    
-    // Extract Featured Stories for the new section
     const featuredStories = MOCK_ARTICLES
       .filter(a => a.isFeatured)
       .slice(0, 3);
@@ -85,42 +104,26 @@ const App: React.FC = () => {
             </div>
         )}
 
-        {mainFeatured && currentView === 'home' && (
+        {/* Hero Section Skeleton */}
+        {isLoading && currentView === 'home' && (
+           <div className="mb-20 grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <div className="lg:col-span-8 h-[500px] lg:h-[600px] bg-slate-200 rounded-[2.5rem] animate-pulse"></div>
+              <div className="lg:col-span-4 flex flex-col gap-8">
+                 <div className="flex-1 bg-slate-200 rounded-[2rem] min-h-[280px] animate-pulse"></div>
+                 <div className="flex-1 bg-slate-200 rounded-[2rem] min-h-[280px] animate-pulse"></div>
+              </div>
+           </div>
+        )}
+
+        {!isLoading && mainFeatured && currentView === 'home' && (
           <section className="mb-20 animate-fade-in">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-auto">
-              
-              <div 
-                onClick={() => handleArticleClick(mainFeatured)}
-                className="lg:col-span-8 relative rounded-[2.5rem] overflow-hidden group cursor-pointer shadow-2xl border border-white/20"
-              >
-                 <img 
-                    src={mainFeatured.imageUrl} 
-                    alt={mainFeatured.title} 
-                    className="w-full h-[500px] lg:h-[600px] object-cover transition-transform duration-1000 group-hover:scale-110"
+              <div className="lg:col-span-8">
+                 <ArticleCard 
+                    article={mainFeatured} 
+                    onClick={handleArticleClick} 
+                    variant="large" 
                  />
-                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/50 to-transparent flex flex-col justify-end p-10 md:p-14">
-                    <div className="transform translate-y-6 group-hover:translate-y-0 transition-all duration-500">
-                        <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-600 text-white text-sm font-bold rounded-full mb-5 shadow-xl shadow-emerald-900/40">
-                            <Star size={14} className="fill-current" /> مقال الغلاف
-                        </span>
-                        <h1 className="text-4xl md:text-6xl font-black text-white mb-6 leading-[1.1] drop-shadow-xl font-amiri">
-                            {mainFeatured.title}
-                        </h1>
-                        <p className="text-slate-200 text-xl line-clamp-2 md:w-5/6 mb-8 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100 font-medium">
-                            {mainFeatured.excerpt}
-                        </p>
-                        <div className="flex items-center text-slate-300 text-base gap-6">
-                            <div className="flex items-center gap-2">
-                              <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center font-bold text-white text-xs">
-                                {mainFeatured.author[0]}
-                              </div>
-                              <span className="font-bold text-white">{mainFeatured.author}</span>
-                            </div>
-                            <span className="w-1.5 h-1.5 bg-slate-400 rounded-full"></span>
-                            <span>{mainFeatured.date}</span>
-                        </div>
-                    </div>
-                 </div>
               </div>
 
               <div className="lg:col-span-4 flex flex-col gap-8">
@@ -159,9 +162,9 @@ const App: React.FC = () => {
           
           <div className="lg:col-span-8 space-y-12">
             
-            {/* New "Featured Stories" Section */}
-            {currentView === 'home' && featuredStories.length > 0 && (
-              <section className="bg-white/50 p-8 rounded-[2rem] border border-slate-100 animate-fade-in">
+            {/* Featured Stories Section */}
+            {currentView === 'home' && (
+              <section className="bg-white/50 p-8 rounded-[2rem] border border-slate-100">
                 <div className="flex items-center gap-3 mb-8">
                   <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 shadow-sm">
                     <Bookmark size={24} className="fill-current" />
@@ -169,34 +172,80 @@ const App: React.FC = () => {
                   <h3 className="text-3xl font-black text-slate-900">قصص مميزة</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {featuredStories.map(article => (
-                    <ArticleCard 
-                      key={article.id} 
-                      article={article} 
-                      onClick={handleArticleClick} 
-                      variant="compact" 
-                    />
-                  ))}
+                  {isLoading ? (
+                    Array(3).fill(0).map((_, idx) => <Skeleton key={idx} variant="compact" />)
+                  ) : (
+                    featuredStories.map(article => (
+                      <ArticleCard 
+                        key={article.id} 
+                        article={article} 
+                        onClick={handleArticleClick} 
+                        variant="compact" 
+                      />
+                    ))
+                  )}
                 </div>
               </section>
             )}
 
-            <div className="flex items-center justify-between border-b-4 border-slate-100 pb-5">
-              <h3 className="text-3xl font-black text-slate-900 flex items-center gap-3">
-                <Zap size={32} className="text-emerald-500 fill-emerald-500" />
-                آخر المستجدات
-              </h3>
-            </div>
-            
-            <div className="flex flex-col gap-10">
-              {mainFeedArticles.map(article => (
-                <ArticleCard 
-                    key={article.id} 
-                    article={article} 
-                    onClick={handleArticleClick} 
-                    variant="horizontal" 
-                />
-              ))}
+            <div className="space-y-8">
+                <div className="flex flex-col md:flex-row md:items-end justify-between border-b-4 border-slate-100 pb-5 gap-6">
+                    <h3 className="text-3xl font-black text-slate-900 flex items-center gap-3">
+                        <Zap size={32} className="text-emerald-500 fill-emerald-500" />
+                        آخر المستجدات
+                    </h3>
+                    
+                    {/* Category Filter Bar */}
+                    <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
+                        <div className="flex items-center gap-2 px-3 py-1 bg-slate-100 rounded-full text-slate-400">
+                            <Filter size={14} />
+                            <span className="text-[10px] font-bold uppercase">تصفية</span>
+                        </div>
+                        {Object.values(Category).map((cat) => (
+                            <button
+                                key={cat}
+                                onClick={() => setActiveCategory(cat)}
+                                className={`px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap transition-all border ${
+                                    activeCategory === cat
+                                        ? 'bg-emerald-600 text-white border-emerald-600 shadow-lg shadow-emerald-100'
+                                        : 'bg-white text-slate-500 border-slate-100 hover:border-emerald-200 hover:text-emerald-600'
+                                }`}
+                            >
+                                {cat}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+                
+                <div className="flex flex-col gap-10 min-h-[400px]">
+                {isLoading ? (
+                    Array(4).fill(0).map((_, idx) => <Skeleton key={idx} variant="horizontal" />)
+                ) : displayedFeedArticles.length > 0 ? (
+                    displayedFeedArticles.map(article => (
+                    <div key={article.id} className="animate-fade-in">
+                        <ArticleCard 
+                            article={article} 
+                            onClick={handleArticleClick} 
+                            variant="horizontal" 
+                        />
+                    </div>
+                    ))
+                ) : (
+                    <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-dashed border-slate-200 text-center animate-fade-in">
+                        <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+                            <SearchX size={40} className="text-slate-300" />
+                        </div>
+                        <h4 className="text-xl font-bold text-slate-900 mb-2">لا توجد مقالات في هذا القسم</h4>
+                        <p className="text-slate-500 mb-6">لم نجد أي مقالات تندرج تحت تصنيف "{activeCategory}" حالياً.</p>
+                        <button 
+                            onClick={() => setActiveCategory(Category.ALL)}
+                            className="bg-emerald-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100"
+                        >
+                            عرض كل المقالات
+                        </button>
+                    </div>
+                )}
+                </div>
             </div>
 
              <button className="w-full py-5 rounded-2xl bg-white border-2 border-slate-200 font-bold text-slate-700 hover:border-emerald-500 hover:text-emerald-600 transition-all shadow-sm hover:shadow-md">

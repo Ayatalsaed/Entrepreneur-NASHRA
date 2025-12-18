@@ -1,7 +1,9 @@
+
 import React, { useState } from 'react';
 import { generateSmartBriefing } from '../services/geminiService';
 import { BriefingResponse } from '../types';
-import { Sparkles, Send, BrainCircuit, Loader2, FileText, Target, TrendingUp, Lightbulb, ArrowRight, BarChart3 } from 'lucide-react';
+import { Sparkles, Send, BrainCircuit, Loader2, FileText, Target, TrendingUp, Lightbulb, ArrowRight, BarChart3, Share2 } from 'lucide-react';
+import ShareModal from './ShareModal';
 
 const SUGGESTED_TOPICS = [
     "مستقبل الذكاء الاصطناعي",
@@ -16,6 +18,7 @@ const SmartAnalyst: React.FC = () => {
   const [briefing, setBriefing] = useState<BriefingResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isShareOpen, setIsShareOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent | null) => {
     if (e) e.preventDefault();
@@ -38,6 +41,11 @@ const SmartAnalyst: React.FC = () => {
   const handleSuggestionClick = (suggestion: string) => {
     setTopic(suggestion);
   };
+
+  // Assume this URL points to a dynamic shareable version of the briefing
+  const shareUrl = briefing 
+    ? `${window.location.origin}/analyst/briefing?topic=${encodeURIComponent(topic)}`
+    : window.location.href;
 
   return (
     <div className="container mx-auto px-4 py-8 animate-fade-in">
@@ -112,19 +120,28 @@ const SmartAnalyst: React.FC = () => {
 
                 {briefing && (
                    <div className="animate-fade-in w-full">
-                       <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-6">
+                       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 border-b border-white/10 pb-6 gap-4">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-emerald-500/20 rounded-lg text-emerald-400">
                                     <BarChart3 size={24} />
                                 </div>
                                 <h2 className="text-2xl md:text-3xl font-bold text-white">{briefing.title}</h2>
                             </div>
-                            <button 
-                                onClick={() => setBriefing(null)}
-                                className="text-slate-400 hover:text-white transition-colors flex items-center gap-2 text-sm"
-                            >
-                                تحليل جديد <ArrowRight size={16} className="rotate-180" />
-                            </button>
+                            <div className="flex items-center gap-4">
+                                <button 
+                                    onClick={() => setIsShareOpen(true)}
+                                    className="bg-white/5 hover:bg-white/10 text-white px-4 py-2 rounded-xl transition-all border border-white/10 flex items-center gap-2 text-sm font-bold"
+                                >
+                                    <Share2 size={16} />
+                                    مشاركة التقرير
+                                </button>
+                                <button 
+                                    onClick={() => setBriefing(null)}
+                                    className="text-slate-400 hover:text-white transition-colors flex items-center gap-2 text-sm"
+                                >
+                                    تحليل جديد <ArrowRight size={16} className="rotate-180" />
+                                </button>
+                            </div>
                        </div>
 
                        <div className="grid md:grid-cols-12 gap-6">
@@ -189,6 +206,15 @@ const SmartAnalyst: React.FC = () => {
             </div>
         </div>
       </div>
+
+      {briefing && (
+        <ShareModal 
+            isOpen={isShareOpen} 
+            onClose={() => setIsShareOpen(false)} 
+            title={briefing.title} 
+            url={shareUrl} 
+        />
+      )}
     </div>
   );
 };
