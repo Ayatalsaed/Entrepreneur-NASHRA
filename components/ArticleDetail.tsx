@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Article } from '../types';
 import { MOCK_ARTICLES } from '../constants';
 import ArticleCard from './ArticleCard';
@@ -17,7 +17,9 @@ import {
   Link as LinkIcon,
   Check,
   Send,
-  Trash2
+  Trash2,
+  ChevronRight,
+  ChevronLeft
 } from 'lucide-react';
 
 interface Comment {
@@ -39,6 +41,8 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({ article, onBack, onNaviga
   const [newComment, setNewComment] = useState('');
   const [userName, setUserName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const commentsPerPage = 10;
 
   // Load comments from localStorage
   useEffect(() => {
@@ -52,9 +56,10 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({ article, onBack, onNaviga
     } else {
       setComments([]);
     }
-    // Reset form when article changes
+    // Reset form and pagination when article changes
     setNewComment('');
     setUserName('');
+    setCurrentPage(1);
   }, [article.id]);
 
   const handleCopyLink = () => {
@@ -83,12 +88,20 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({ article, onBack, onNaviga
     setNewComment('');
     setUserName('');
     setIsSubmitting(false);
+    // Reset to page 1 to see the new comment
+    setCurrentPage(1);
   };
 
   const handleDeleteComment = (id: string) => {
     const updatedComments = comments.filter(c => c.id !== id);
     setComments(updatedComments);
     localStorage.setItem(`nashra_comments_${article.id}`, JSON.stringify(updatedComments));
+    
+    // Adjust page if current page becomes empty
+    const newTotalPages = Math.ceil(updatedComments.length / commentsPerPage);
+    if (currentPage > newTotalPages && newTotalPages > 0) {
+      setCurrentPage(newTotalPages);
+    }
   };
 
   const calculateReadTime = () => {
@@ -107,6 +120,21 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({ article, onBack, onNaviga
   const relatedArticles = MOCK_ARTICLES
     .filter(a => a.category === article.category && a.id !== article.id)
     .slice(0, 3);
+
+  // Pagination Logic
+  const totalPages = Math.ceil(comments.length / commentsPerPage);
+  const paginatedComments = useMemo(() => {
+    const start = (currentPage - 1) * commentsPerPage;
+    return comments.slice(start, start + commentsPerPage);
+  }, [comments, currentPage]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    const commentSection = document.getElementById('comments-section');
+    if (commentSection) {
+      commentSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   return (
     <div className="bg-white min-h-screen animate-fade-in pb-20">
@@ -189,7 +217,7 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({ article, onBack, onNaviga
         </div>
 
         {/* Improved Comments Section */}
-        <div className="mt-16 p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 shadow-sm">
+        <div id="comments-section" className="mt-16 p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 shadow-sm">
             <h3 className="text-2xl font-black mb-8 flex items-center gap-3 text-slate-900">
               <div className="p-2 bg-emerald-100 text-emerald-600 rounded-lg">
                 <MessageCircle size={24} />
@@ -231,34 +259,79 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({ article, onBack, onNaviga
               </button>
             </form>
 
-            {/* Comments List */}
+            {/* Comments List with Pagination */}
             <div className="space-y-6">
-              {comments.length > 0 ? (
-                comments.map((comment) => (
-                  <div key={comment.id} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm animate-fade-in group">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 font-bold border border-emerald-100">
-                          {comment.userName.charAt(0)}
+              {paginatedComments.length > 0 ? (
+                <>
+                  {paginatedComments.map((comment) => (
+                    <div key={comment.id} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm animate-fade-in group">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center border border-emerald-100 overflow-hidden shadow-sm">
+                            <img 
+                              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(comment.userName)}&background=random&color=fff&size=40`} 
+                              alt={comment.userName}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-slate-900">{comment.userName}</h4>
+                            <span className="text-xs text-slate-400">{comment.date}</span>
+                          </div>
                         </div>
-                        <div>
-                          <h4 className="font-bold text-slate-900">{comment.userName}</h4>
-                          <span className="text-xs text-slate-400">{comment.date}</span>
-                        </div>
+                        <button 
+                          onClick={() => handleDeleteComment(comment.id)}
+                          className="p-2 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all rounded-lg hover:bg-red-50"
+                          title="حذف التعليق"
+                        >
+                          <Trash2 size={16} />
+                        </button>
                       </div>
+                      <p className="text-slate-700 leading-relaxed font-amiri text-lg pr-13">
+                        {comment.text}
+                      </p>
+                    </div>
+                  ))}
+                  
+                  {/* Pagination Controls */}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-center gap-4 mt-10">
                       <button 
-                        onClick={() => handleDeleteComment(comment.id)}
-                        className="p-2 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all rounded-lg hover:bg-red-50"
-                        title="حذف التعليق"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="p-3 bg-white border border-slate-100 rounded-xl text-slate-500 hover:text-emerald-600 disabled:opacity-30 disabled:hover:text-slate-500 transition-all shadow-sm"
+                        title="الصفحة التالية"
                       >
-                        <Trash2 size={16} />
+                        <ChevronRight size={20} />
+                      </button>
+                      
+                      <div className="flex items-center gap-2">
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                          <button
+                            key={page}
+                            onClick={() => handlePageChange(page)}
+                            className={`w-10 h-10 rounded-xl font-bold transition-all ${
+                              currentPage === page 
+                              ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-100' 
+                              : 'bg-white text-slate-500 border border-slate-100 hover:border-emerald-200 hover:text-emerald-600'
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        ))}
+                      </div>
+
+                      <button 
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="p-3 bg-white border border-slate-100 rounded-xl text-slate-500 hover:text-emerald-600 disabled:opacity-30 disabled:hover:text-slate-500 transition-all shadow-sm"
+                        title="الصفحة السابقة"
+                      >
+                        <ChevronLeft size={20} />
                       </button>
                     </div>
-                    <p className="text-slate-700 leading-relaxed font-amiri text-lg pr-13">
-                      {comment.text}
-                    </p>
-                  </div>
-                ))
+                  )}
+                </>
               ) : (
                 <div className="text-center py-12 bg-white rounded-3xl border border-dashed border-slate-200">
                   <MessageCircle size={40} className="mx-auto text-slate-200 mb-4" />

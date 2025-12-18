@@ -141,11 +141,11 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, onClick, variant = '
     );
   };
 
-  const WarningBadge = () => {
+  const WarningBadge = ({ className = "" }: { className?: string }) => {
     if (!article.contentWarning) return null;
     return (
-      <div className="flex items-center gap-1.5 px-2 py-1 mb-2 bg-amber-50 text-amber-700 border border-amber-100 rounded-md text-[10px] font-bold w-fit animate-pulse">
-        <AlertTriangle size={12} className="text-amber-500" />
+      <div className={`flex items-center gap-2 px-3 py-1.5 mb-3 bg-rose-600 text-white rounded-xl text-[11px] font-black uppercase tracking-wide w-fit animate-pulse shadow-xl shadow-rose-900/20 border border-rose-500/50 ${className}`}>
+        <AlertTriangle size={14} className="text-rose-100" />
         <span>تنبيه: {article.contentWarning}</span>
       </div>
     );
@@ -196,6 +196,9 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, onClick, variant = '
           
           <VideoPlayOverlay size="lg" />
 
+          {/* Floating Warning for Large Variant */}
+          <WarningBadge className="absolute top-8 right-8 z-20 md:px-5 md:py-3 md:text-sm" />
+
           <div className="relative h-full flex flex-col justify-end p-8 md:p-14 text-white">
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
@@ -204,7 +207,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, onClick, variant = '
                   </span>
                   <VideoBadge />
                   <span className="flex items-center gap-2 text-sm font-bold text-emerald-100/80 backdrop-blur-md bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
-                    <Clock size={16} /> {readTime}
+                    <Clock size={16} className="text-emerald-400" /> {readTime}
                   </span>
                 </div>
                 <button 
@@ -216,7 +219,6 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, onClick, variant = '
             </div>
 
             <div className="space-y-4 mb-8">
-              <WarningBadge />
               <h1 className="text-3xl md:text-6xl font-black leading-[1.15] font-amiri drop-shadow-2xl max-w-4xl group-hover:text-emerald-50 transition-colors duration-500">
                 {article.title}
               </h1>
@@ -231,8 +233,12 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, onClick, variant = '
                   <img src={`https://ui-avatars.com/api/?name=${article.author}&background=059669&color=fff`} alt={article.author} />
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-black text-white text-lg md:text-xl">{article.author}</span>
-                  <span className="text-sm text-emerald-400 font-bold">{article.date}</span>
+                  <span className="font-black text-white text-lg md:text-xl flex items-center gap-2">
+                    <User size={18} className="text-emerald-400" /> {article.author}
+                  </span>
+                  <span className="text-sm text-emerald-400 font-bold flex items-center gap-2">
+                    <Calendar size={14} /> {article.date}
+                  </span>
                 </div>
               </div>
               <div className="flex items-center gap-3 md:gap-4">
@@ -279,7 +285,9 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, onClick, variant = '
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">{article.category}</span>
                     <VideoBadge />
-                    <span className="text-[10px] text-slate-400 flex items-center gap-1"><Clock size={10} /> {readTime}</span>
+                    <span className="text-[10px] text-slate-400 flex items-center gap-1">
+                      <Clock size={10} className="text-emerald-500" /> {readTime}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button onClick={handleSummarize} className="text-emerald-500 hover:text-emerald-700 transition-colors"><Sparkles size={14} /></button>
@@ -287,7 +295,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, onClick, variant = '
                     <button onClick={toggleLike} className={`transition-colors ${isLiked ? 'text-rose-500' : 'text-slate-300 hover:text-rose-500'}`}><Heart size={14} className={isLiked ? "fill-current" : ""} /></button>
                   </div>
               </div>
-              <WarningBadge />
+              <WarningBadge className="mb-1 py-0.5 px-2 text-[9px]" />
               <h4 className="font-bold text-slate-900 leading-tight group-hover:text-emerald-700 transition-colors line-clamp-2">{article.title}</h4>
           </div>
         </div>
@@ -330,32 +338,38 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, onClick, variant = '
             </div>
             
             <div className="space-y-3">
-              <WarningBadge />
+              <WarningBadge className="md:text-xs md:px-4" />
               <h3 className="text-2xl md:text-3xl font-black text-slate-900 group-hover:text-emerald-700 transition-colors duration-300 leading-tight font-amiri">{article.title}</h3>
             </div>
             
-            <div className="flex flex-col gap-2">
-                <p className={`text-slate-500 text-base md:text-lg leading-relaxed font-medium transition-colors group-hover:text-slate-600 ${isExpanded ? '' : 'line-clamp-2'}`}>
-                    {isExpanded ? article.content : article.excerpt}
-                </p>
+            <div className="flex flex-col gap-3">
+                <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-[2000px]' : 'max-h-24'}`}>
+                  <p className={`text-slate-500 text-base md:text-lg leading-relaxed font-medium transition-colors group-hover:text-slate-600 ${isExpanded ? '' : 'line-clamp-2'}`}>
+                      {isExpanded ? article.content : article.excerpt}
+                  </p>
+                </div>
                 <button 
                     onClick={toggleExpand}
-                    className="flex items-center gap-1 text-emerald-600 font-bold text-xs hover:text-emerald-700 transition-colors w-fit"
+                    className="flex items-center gap-1 text-emerald-600 font-bold text-xs hover:text-emerald-700 transition-all w-fit py-1 px-2 rounded-lg hover:bg-emerald-50"
                 >
                     {isExpanded ? (
-                        <>تصغير <ChevronUp size={14} /></>
+                        <>عرض أقل <ChevronUp size={14} /></>
                     ) : (
-                        <>إظهار المزيد <ChevronDown size={14} /></>
+                        <>إقرأ المزيد <ChevronDown size={14} /></>
                     )}
                 </button>
             </div>
             
             <div className="flex items-center justify-between pt-4 border-t border-slate-100/60">
               <div className="flex items-center gap-4 text-xs text-slate-400 font-bold">
-                <span className="flex items-center gap-2 text-slate-600"><User size={16} className="text-emerald-500" /> {article.author}</span>
-                <span className="flex items-center gap-2"><Calendar size={16} className="text-emerald-500" /> {article.date}</span>
+                <span className="flex items-center gap-2 text-slate-600">
+                  <User size={16} className="text-emerald-500" /> {article.author}
+                </span>
+                <span className="flex items-center gap-2">
+                  <Calendar size={16} className="text-emerald-500" /> {article.date}
+                </span>
               </div>
-              <div className="flex items-center gap-1.5 text-emerald-600 font-bold text-xs group-hover:translate-x-[-8px] transition-transform duration-300"><span>إقرأ المزيد</span><ArrowLeft size={14} /></div>
+              <div className="flex items-center gap-1.5 text-emerald-600 font-bold text-xs group-hover:translate-x-[-8px] transition-transform duration-300"><span>عرض المقال</span><ArrowLeft size={14} /></div>
             </div>
           </div>
         </div>
@@ -395,17 +409,19 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, onClick, variant = '
           </div>
           
           <div className="space-y-2">
-            <WarningBadge />
+            <WarningBadge className="mb-2" />
             <h3 className="text-2xl font-black text-slate-900 group-hover:text-emerald-700 transition-colors duration-300 leading-tight font-amiri line-clamp-2">{article.title}</h3>
           </div>
           
-          <div className="flex flex-col gap-2">
-            <p className={`text-slate-500 text-base leading-relaxed font-medium transition-colors group-hover:text-slate-600 ${isExpanded ? '' : 'line-clamp-3'}`}>
-                {isExpanded ? article.content : article.excerpt}
-            </p>
+          <div className="flex flex-col gap-3">
+            <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-[2000px]' : 'max-h-24'}`}>
+              <p className={`text-slate-500 text-base leading-relaxed font-medium transition-colors group-hover:text-slate-600 ${isExpanded ? '' : 'line-clamp-3'}`}>
+                  {isExpanded ? article.content : article.excerpt}
+              </p>
+            </div>
             <button 
                 onClick={toggleExpand}
-                className="flex items-center gap-1 text-emerald-600 font-bold text-xs hover:text-emerald-700 transition-colors w-fit"
+                className="flex items-center gap-1 text-emerald-600 font-bold text-xs hover:text-emerald-700 transition-all w-fit py-1 px-2 rounded-lg hover:bg-emerald-50"
             >
                 {isExpanded ? (
                     <>عرض أقل <ChevronUp size={14} /></>
@@ -427,8 +443,10 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, onClick, variant = '
                   <img src={`https://ui-avatars.com/api/?name=${article.author}&background=059669&color=fff`} alt={article.author} />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-xs font-black text-slate-800">{article.author}</span>
-                  <span className="text-[10px] text-slate-400 font-bold">فريق التحرير</span>
+                  <span className="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                    <User size={12} className="text-emerald-500" /> {article.author}
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">فريق التحرير</span>
                 </div>
               </div>
               <ArrowLeft size={16} className="text-slate-200 group-hover:text-emerald-500 group-hover:translate-x-[-6px] transition-all duration-300" />

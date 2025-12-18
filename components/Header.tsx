@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Menu, X, Rocket, Search, ChevronLeft, Play, ArrowLeft } from 'lucide-react';
+import { Menu, X, Rocket, Search, ChevronLeft, Play, ArrowLeft, Twitter, Linkedin, Facebook } from 'lucide-react';
 import { NAV_LINKS, MOCK_ARTICLES } from '../constants';
 import { Article } from '../types';
 
@@ -64,6 +64,20 @@ const Header: React.FC<HeaderProps> = ({ currentView, onNavigate, onArticleSelec
     handleSearchClose();
   };
 
+  const SocialIcons = ({ className = "" }: { className?: string }) => (
+    <div className={`flex items-center gap-2 ${className}`}>
+      <a href="#" className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-[#1DA1F2] hover:bg-slate-50 rounded-full transition-all duration-200" aria-label="Twitter">
+        <Twitter size={18} fill="currentColor" />
+      </a>
+      <a href="#" className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-[#0077B5] hover:bg-slate-50 rounded-full transition-all duration-200" aria-label="LinkedIn">
+        <Linkedin size={18} fill="currentColor" />
+      </a>
+      <a href="#" className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-[#1877F2] hover:bg-slate-50 rounded-full transition-all duration-200" aria-label="Facebook">
+        <Facebook size={18} fill="currentColor" />
+      </a>
+    </div>
+  );
+
   return (
     <>
       <header 
@@ -91,7 +105,7 @@ const Header: React.FC<HeaderProps> = ({ currentView, onNavigate, onArticleSelec
             </div>
 
             {/* Desktop Nav */}
-            <nav className="hidden md:flex items-center gap-1">
+            <nav className="hidden lg:flex items-center gap-1">
               {NAV_LINKS.map((link) => (
                 <button
                   key={link.value}
@@ -109,12 +123,14 @@ const Header: React.FC<HeaderProps> = ({ currentView, onNavigate, onArticleSelec
 
             {/* Actions */}
             <div className="hidden md:flex items-center gap-3">
+              <SocialIcons className="mr-2" />
+              <div className="w-px h-6 bg-slate-200 mx-2 hidden lg:block"></div>
               <button 
                 onClick={() => setIsSearchOpen(true)}
-                className="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-full transition-all duration-200"
+                className="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-full transition-all duration-200 group/search"
                 aria-label="بحث"
               >
-                <Search size={20} />
+                <Search size={22} className="group-hover/search:scale-110 transition-transform" />
               </button>
               <button className="bg-slate-900 text-white px-6 py-2.5 rounded-full text-sm font-bold hover:bg-slate-800 transition-all hover:shadow-lg active:transform active:scale-95">
                 اشترك الآن
@@ -157,6 +173,9 @@ const Header: React.FC<HeaderProps> = ({ currentView, onNavigate, onArticleSelec
                 </button>
               ))}
               <hr className="border-slate-100 my-4" />
+              <div className="flex justify-center mb-6">
+                <SocialIcons />
+              </div>
               <button className="bg-emerald-600 text-white w-full py-4 rounded-xl font-bold shadow-lg shadow-emerald-100">
                 اشترك في النشرة البريدية
               </button>
