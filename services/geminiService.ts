@@ -3,12 +3,8 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { BriefingResponse } from "../types";
 
 export const generateSmartBriefing = async (topic: string): Promise<BriefingResponse> => {
-  const apiKey = process.env.API_KEY;
-  if (!apiKey) {
-    throw new Error("مفتاح API غير متوفر");
-  }
-
-  const ai = new GoogleGenAI({ apiKey });
+  // Use API key directly from process.env.API_KEY as per guidelines
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
 
   const prompt = `
     أنت محلل أعمال وتقنية خبير لصحيفة "Entrepreneur NASHRA".
@@ -24,7 +20,8 @@ export const generateSmartBriefing = async (topic: string): Promise<BriefingResp
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      // Use gemini-3-pro-preview for complex reasoning/analysis tasks as per guidelines
+      model: "gemini-3-pro-preview",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
@@ -57,12 +54,8 @@ export const generateSmartBriefing = async (topic: string): Promise<BriefingResp
 };
 
 export const summarizeArticle = async (title: string, content: string): Promise<string> => {
-  const apiKey = process.env.API_KEY;
-  if (!apiKey) {
-    throw new Error("مفتاح API غير متوفر");
-  }
-
-  const ai = new GoogleGenAI({ apiKey });
+  // Use API key directly from process.env.API_KEY as per guidelines
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
 
   const prompt = `
     أنت مساعد ذكي لصحيفة "Entrepreneur NASHRA". 
@@ -74,6 +67,7 @@ export const summarizeArticle = async (title: string, content: string): Promise<
 
   try {
     const response = await ai.models.generateContent({
+      // gemini-3-flash-preview is suitable for basic text tasks like summarization
       model: "gemini-3-flash-preview",
       contents: prompt,
     });

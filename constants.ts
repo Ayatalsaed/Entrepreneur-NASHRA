@@ -1,6 +1,41 @@
 
 import { Article, Category } from './types';
 
+export interface AuthorInfo {
+  name: string;
+  bio: string;
+  avatar: string;
+  role: string;
+  socials: {
+    twitter?: string;
+    linkedin?: string;
+  };
+}
+
+export const MOCK_AUTHORS: Record<string, AuthorInfo> = {
+  'أحمد المنصور': {
+    name: 'أحمد المنصور',
+    role: 'محلل تقني أول',
+    bio: 'خبير في شؤون التقنية والذكاء الاصطناعي مع خبرة تزيد عن 10 سنوات في تحليل الأسواق الرقمية الناشئة في منطقة الشرق الأوسط.',
+    avatar: 'https://ui-avatars.com/api/?name=أحمد+المنصور&background=059669&color=fff',
+    socials: { twitter: 'https://twitter.com', linkedin: 'https://linkedin.com' }
+  },
+  'سارة خالد': {
+    name: 'سارة خالد',
+    role: 'مستشارة ريادة أعمال',
+    bio: 'متخصصة في استراتيجيات نمو الشركات الناشئة وتقديم المشورة للمستثمرين الملائكة. كتبت العديد من المقالات حول تحديات التأسيس في المنطقة.',
+    avatar: 'https://ui-avatars.com/api/?name=سارة+خالد&background=059669&color=fff',
+    socials: { twitter: 'https://twitter.com', linkedin: 'https://linkedin.com' }
+  },
+  'فهد العتيبي': {
+    name: 'فهد العتيبي',
+    role: 'محرر القسم المالي',
+    bio: 'صحفي متخصص في التقنية المالية والتحول الرقمي في القطاع المصرفي. يتابع عن كثب تطورات "الفينتك" في الأسواق الخليجية.',
+    avatar: 'https://ui-avatars.com/api/?name=فهد+العتيبي&background=059669&color=fff',
+    socials: { twitter: 'https://twitter.com', linkedin: 'https://linkedin.com' }
+  }
+};
+
 export const MOCK_ARTICLES: Article[] = [
   {
     id: '1',

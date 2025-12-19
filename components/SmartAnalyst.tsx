@@ -2,7 +2,22 @@
 import React, { useState } from 'react';
 import { generateSmartBriefing } from '../services/geminiService';
 import { BriefingResponse } from '../types';
-import { Sparkles, Send, BrainCircuit, Loader2, FileText, Target, TrendingUp, Lightbulb, ArrowRight, BarChart3, Share2 } from 'lucide-react';
+import { 
+  Sparkles, 
+  BrainCircuit, 
+  Loader2, 
+  FileText, 
+  Target, 
+  TrendingUp, 
+  Lightbulb, 
+  ArrowRight, 
+  BarChart3, 
+  Share2, 
+  CheckCircle2, 
+  Zap, 
+  Compass,
+  RefreshCw
+} from 'lucide-react';
 import ShareModal from './ShareModal';
 
 const SUGGESTED_TOPICS = [
@@ -42,34 +57,33 @@ const SmartAnalyst: React.FC = () => {
     setTopic(suggestion);
   };
 
-  // Assume this URL points to a dynamic shareable version of the briefing
   const shareUrl = briefing 
-    ? `${window.location.origin}/analyst/briefing?topic=${encodeURIComponent(topic)}`
+    ? `${window.location.origin}/#analyst?topic=${encodeURIComponent(topic)}`
     : window.location.href;
 
   return (
     <div className="container mx-auto px-4 py-8 animate-fade-in">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         
         {/* Main Interface */}
-        <div className="bg-slate-900 rounded-3xl overflow-hidden shadow-2xl relative min-h-[500px] flex flex-col">
-            {/* Background Effects */}
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-600/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-blue-600/20 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+        <div className="bg-slate-950 rounded-[3rem] overflow-hidden shadow-2xl relative min-h-[600px] flex flex-col border border-white/5">
+            {/* Background Dynamic Orbs */}
+            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-600/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 pointer-events-none animate-pulse"></div>
+            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-600/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
 
-            <div className="relative z-10 p-8 md:p-12 flex-grow flex flex-col justify-center">
+            <div className="relative z-10 p-6 md:p-12 flex-grow flex flex-col">
                 
                 {!briefing && !loading && (
-                    <div className="text-center max-w-2xl mx-auto space-y-8 animate-fade-in">
+                    <div className="flex-grow flex flex-col justify-center text-center max-w-2xl mx-auto space-y-10 animate-fade-in">
                         <div>
-                            <div className="inline-flex items-center justify-center p-4 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl mb-6 shadow-xl">
-                                <BrainCircuit size={40} className="text-emerald-400" />
+                            <div className="inline-flex items-center justify-center p-5 bg-gradient-to-br from-emerald-500/20 to-blue-500/20 backdrop-blur-xl border border-white/10 rounded-[2rem] mb-8 shadow-2xl">
+                                <BrainCircuit size={48} className="text-emerald-400" />
                             </div>
-                            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
+                            <h1 className="text-5xl md:text-6xl font-black text-white mb-6 tracking-tight font-tajawal">
                                 المحلل الذكي
                             </h1>
-                            <p className="text-slate-400 text-lg leading-relaxed">
-                                محرك تحليل فوري مدعوم بنماذج Gemini المتقدمة. اطلب تقريراً عن أي قطاع أو تقنية.
+                            <p className="text-slate-400 text-xl leading-relaxed font-medium">
+                                قم بتوليد تقارير تحليلية معمقة في ثوانٍ. استشر الذكاء الاصطناعي حول اتجاهات السوق، التقنيات الناشئة، أو استراتيجيات النمو.
                             </p>
                         </div>
 
@@ -79,25 +93,26 @@ const SmartAnalyst: React.FC = () => {
                                     type="text"
                                     value={topic}
                                     onChange={(e) => setTopic(e.target.value)}
-                                    placeholder="عن ماذا تريد أن تبحث اليوم؟"
-                                    className="w-full p-5 pl-32 bg-white/10 border border-white/10 text-white placeholder:text-slate-500 rounded-2xl text-lg focus:outline-none focus:bg-white/15 focus:border-emerald-500/50 transition-all shadow-inner"
+                                    placeholder="ما هو الموضوع الذي تريد تحليله؟"
+                                    className="w-full p-6 pl-36 bg-white/5 border border-white/10 text-white placeholder:text-slate-500 rounded-[2rem] text-xl focus:outline-none focus:bg-white/10 focus:border-emerald-500/50 transition-all shadow-2xl"
                                 />
                                 <button
                                     type="submit"
                                     disabled={!topic.trim()}
-                                    className="absolute left-2 top-2 bottom-2 bg-emerald-600 hover:bg-emerald-500 text-white px-6 rounded-xl font-bold transition-all disabled:opacity-50 disabled:hover:bg-emerald-600 flex items-center gap-2"
+                                    className="absolute left-2.5 top-2.5 bottom-2.5 bg-emerald-600 hover:bg-emerald-500 text-white px-8 rounded-2xl font-black transition-all disabled:opacity-50 disabled:hover:bg-emerald-600 flex items-center gap-3 shadow-lg shadow-emerald-900/40"
                                 >
                                     <span>تحليل</span>
-                                    <Sparkles size={18} />
+                                    <Zap size={20} fill="currentColor" />
                                 </button>
                             </form>
                             
-                            <div className="mt-6 flex flex-wrap justify-center gap-2">
+                            <div className="mt-8 flex flex-wrap justify-center gap-3">
+                                <span className="w-full text-slate-500 text-sm font-bold mb-1 uppercase tracking-widest">مواضيع مقترحة</span>
                                 {SUGGESTED_TOPICS.map((t) => (
                                     <button
                                         key={t}
                                         onClick={() => handleSuggestionClick(t)}
-                                        className="text-xs md:text-sm text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full border border-white/5 hover:border-emerald-500/30 transition-all"
+                                        className="text-sm text-slate-400 hover:text-white bg-white/5 hover:bg-emerald-600/20 px-4 py-2 rounded-xl border border-white/5 hover:border-emerald-500/30 transition-all font-bold"
                                     >
                                         {t}
                                     </button>
@@ -108,87 +123,141 @@ const SmartAnalyst: React.FC = () => {
                 )}
 
                 {loading && (
-                    <div className="flex flex-col items-center justify-center text-center animate-fade-in py-10">
-                        <div className="relative mb-8">
-                            <div className="absolute inset-0 bg-emerald-500 blur-xl opacity-20 animate-pulse rounded-full"></div>
-                            <Loader2 size={64} className="text-emerald-400 animate-spin relative z-10" />
+                    <div className="flex-grow flex flex-col items-center justify-center text-center animate-fade-in py-20">
+                        <div className="relative mb-12">
+                            <div className="absolute inset-0 bg-emerald-500 blur-3xl opacity-20 animate-pulse rounded-full"></div>
+                            <div className="relative">
+                                <Loader2 size={80} className="text-emerald-400 animate-spin" />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <BrainCircuit size={32} className="text-emerald-400 opacity-50" />
+                                </div>
+                            </div>
                         </div>
-                        <h3 className="text-2xl font-bold text-white mb-2">جاري إعداد التقرير</h3>
-                        <p className="text-slate-400">يقوم Gemini بتحليل البيانات وبناء الرؤى حول "{topic}"...</p>
+                        <div className="space-y-4 max-w-md">
+                            <h3 className="text-3xl font-black text-white">يقوم Gemini بمعالجة طلبك</h3>
+                            <p className="text-slate-400 text-lg leading-relaxed">
+                                جاري تحليل البيانات وبناء رؤى استراتيجية حول <span className="text-emerald-400 font-bold">"{topic}"</span> باستخدام أحدث نماذج الاستدلال.
+                            </p>
+                        </div>
                     </div>
                 )}
 
                 {briefing && (
-                   <div className="animate-fade-in w-full">
-                       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 border-b border-white/10 pb-6 gap-4">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-emerald-500/20 rounded-lg text-emerald-400">
-                                    <BarChart3 size={24} />
+                   <div className="w-full h-full flex flex-col">
+                       {/* Header Section */}
+                       <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 border-b border-white/10 pb-8 gap-6 animate-fade-in">
+                            <div className="flex items-center gap-5">
+                                <div className="p-4 bg-emerald-500/20 rounded-2xl text-emerald-400 shadow-xl shadow-emerald-900/20 ring-1 ring-emerald-500/30">
+                                    <BarChart3 size={32} />
                                 </div>
-                                <h2 className="text-2xl md:text-3xl font-bold text-white">{briefing.title}</h2>
+                                <div>
+                                    <h2 className="text-3xl md:text-4xl font-black text-white font-amiri leading-tight">{briefing.title}</h2>
+                                    <p className="text-slate-500 text-sm font-bold uppercase tracking-widest mt-1">تقرير استراتيجي حصري</p>
+                                </div>
                             </div>
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-3">
                                 <button 
                                     onClick={() => setIsShareOpen(true)}
-                                    className="bg-white/5 hover:bg-white/10 text-white px-4 py-2 rounded-xl transition-all border border-white/10 flex items-center gap-2 text-sm font-bold"
+                                    className="bg-white/5 hover:bg-emerald-600/20 text-white px-6 py-3 rounded-2xl transition-all border border-white/10 flex items-center gap-2 text-sm font-bold shadow-xl"
                                 >
-                                    <Share2 size={16} />
+                                    <Share2 size={18} />
                                     مشاركة التقرير
                                 </button>
                                 <button 
                                     onClick={() => setBriefing(null)}
-                                    className="text-slate-400 hover:text-white transition-colors flex items-center gap-2 text-sm"
+                                    className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-2xl transition-all font-bold flex items-center gap-2 text-sm shadow-xl shadow-emerald-900/20"
                                 >
-                                    تحليل جديد <ArrowRight size={16} className="rotate-180" />
+                                    <RefreshCw size={18} />
+                                    تحليل جديد
                                 </button>
                             </div>
                        </div>
 
-                       <div className="grid md:grid-cols-12 gap-6">
-                           {/* Summary */}
-                           <div className="md:col-span-12 lg:col-span-8 space-y-6">
-                                <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-                                    <div className="flex items-center gap-2 mb-4 text-emerald-400 font-bold">
-                                        <FileText size={20} />
-                                        <h3>الملخص التنفيذي</h3>
+                       {/* Content Grid */}
+                       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 flex-grow">
+                           
+                           {/* Left Column: Summary & Key Points */}
+                           <div className="lg:col-span-8 space-y-8">
+                                
+                                {/* Summary Card */}
+                                <div className="bg-gradient-to-br from-white/5 to-transparent border border-white/10 rounded-[2.5rem] p-8 md:p-10 shadow-2xl relative overflow-hidden group animate-fade-in">
+                                    <div className="absolute top-0 left-0 w-2 h-full bg-emerald-500 opacity-50"></div>
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <div className="p-2 bg-emerald-500/10 rounded-xl text-emerald-400">
+                                            <FileText size={24} />
+                                        </div>
+                                        <h3 className="text-xl font-black text-white uppercase tracking-wider">الملخص التنفيذي</h3>
                                     </div>
-                                    <p className="text-slate-300 leading-relaxed text-lg">
+                                    <p className="text-slate-300 leading-relaxed text-xl font-amiri md:text-2xl transition-all group-hover:text-white">
                                         {briefing.summary}
                                     </p>
                                 </div>
 
-                                <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-                                    <div className="flex items-center gap-2 mb-4 text-blue-400 font-bold">
-                                        <Target size={20} />
-                                        <h3>الرؤى الرئيسية</h3>
+                                {/* Key Points Section */}
+                                <div className="space-y-6">
+                                    <div className="flex items-center gap-3 mb-2 px-4">
+                                        <div className="p-2 bg-blue-500/10 rounded-xl text-blue-400">
+                                            <Target size={24} />
+                                        </div>
+                                        <h3 className="text-xl font-black text-white uppercase tracking-wider">الرؤى والبيانات الرئيسية</h3>
                                     </div>
-                                    <ul className="space-y-4">
+                                    
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         {briefing.keyPoints.map((point, idx) => (
-                                            <li key={idx} className="flex gap-4">
-                                                <span className="flex-shrink-0 w-8 h-8 bg-blue-500/20 text-blue-400 rounded-lg flex items-center justify-center text-sm font-bold border border-blue-500/20">
-                                                    {idx + 1}
-                                                </span>
-                                                <span className="text-slate-300 pt-1">{point}</span>
-                                            </li>
+                                            <div 
+                                                key={idx} 
+                                                className="bg-white/5 border border-white/10 rounded-3xl p-6 hover:bg-white/[0.08] hover:border-blue-500/30 transition-all duration-300 group animate-fade-in"
+                                                style={{ animationDelay: `${(idx + 1) * 150}ms` }}
+                                            >
+                                                <div className="flex items-start gap-5">
+                                                    <div className="w-10 h-10 rounded-2xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-lg font-black shrink-0 border border-blue-500/20 group-hover:scale-110 transition-transform">
+                                                        {idx + 1}
+                                                    </div>
+                                                    <p className="text-slate-300 text-lg leading-relaxed pt-1 group-hover:text-white transition-colors">
+                                                        {point}
+                                                    </p>
+                                                </div>
+                                            </div>
                                         ))}
-                                    </ul>
+                                    </div>
                                 </div>
                            </div>
 
-                           {/* Sidebar Outlook */}
-                           <div className="md:col-span-12 lg:col-span-4">
-                                <div className="bg-gradient-to-br from-emerald-900/40 to-slate-900 border border-emerald-500/20 rounded-2xl p-6 h-full">
-                                    <div className="flex items-center gap-2 mb-4 text-emerald-400 font-bold">
-                                        <TrendingUp size={20} />
-                                        <h3>النظرة المستقبلية</h3>
+                           {/* Right Column: Outlook & Insights */}
+                           <div className="lg:col-span-4 space-y-8">
+                                
+                                {/* Outlook Card */}
+                                <div className="bg-gradient-to-br from-slate-900 to-emerald-950/40 border border-emerald-500/20 rounded-[2.5rem] p-8 h-full shadow-2xl relative overflow-hidden flex flex-col animate-fade-in" style={{ animationDelay: '600ms' }}>
+                                    <div className="absolute -top-10 -left-10 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl"></div>
+                                    
+                                    <div className="flex items-center gap-3 mb-8">
+                                        <div className="p-2 bg-emerald-500/20 rounded-xl text-emerald-400">
+                                            <Compass size={24} />
+                                        </div>
+                                        <h3 className="text-xl font-black text-white uppercase tracking-wider">النظرة المستقبلية</h3>
                                     </div>
-                                    <div className="text-emerald-100/80 leading-relaxed mb-6">
-                                        {briefing.outlook}
+
+                                    <div className="flex-grow flex flex-col justify-center">
+                                        <div className="bg-white/5 p-6 rounded-3xl border border-white/5 mb-8 backdrop-blur-md">
+                                            <p className="text-emerald-100 text-lg md:text-xl leading-relaxed font-amiri italic">
+                                                "{briefing.outlook}"
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div className="mt-auto pt-4 border-t border-white/10">
-                                        <div className="flex items-center gap-2 text-xs text-slate-500">
-                                            <Lightbulb size={12} />
-                                            <span>تم التوليد بواسطة Gemini AI</span>
+
+                                    <div className="pt-6 border-t border-white/10 flex flex-col gap-4">
+                                        <div className="flex items-center gap-4 text-emerald-400/60">
+                                            <CheckCircle2 size={16} />
+                                            <span className="text-xs font-bold uppercase tracking-widest">تحليل تم التحقق منه</span>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white">
+                                                <Sparkles size={16} />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] text-slate-500 font-bold uppercase">المصدر</span>
+                                                <span className="text-xs text-white font-bold">Gemini Strategic Engine</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -198,9 +267,14 @@ const SmartAnalyst: React.FC = () => {
                 )}
 
                 {error && (
-                    <div className="mt-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-center animate-fade-in">
-                        {error}
-                        <button onClick={() => setError(null)} className="block mx-auto mt-2 text-sm underline">حاول مرة أخرى</button>
+                    <div className="mt-10 p-6 bg-red-500/10 border border-red-500/20 rounded-[2rem] text-red-400 text-center animate-fade-in max-w-lg mx-auto">
+                        <p className="text-lg font-bold mb-4">{error}</p>
+                        <button 
+                            onClick={() => setError(null)} 
+                            className="bg-red-500/20 hover:bg-red-500/30 text-red-400 px-8 py-3 rounded-xl font-bold transition-all text-sm uppercase tracking-widest"
+                        >
+                            إعادة المحاولة
+                        </button>
                     </div>
                 )}
             </div>
